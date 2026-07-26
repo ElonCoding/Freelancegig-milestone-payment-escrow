@@ -35,6 +35,8 @@ Rust smart contract + Next.js 16 frontend.
 
 ## 1 — Contract (Rust / Soroban)
 
+`CONTRACT_ADDRESS = "CCEC6DZQWPIOKMXGMP3ECKL5ETFTUAMTG26B6T5ICGNHSIBUJOZNRGQZ"`
+
 ### Build
 
 ```bash
