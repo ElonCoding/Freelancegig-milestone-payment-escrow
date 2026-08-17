@@ -15,7 +15,7 @@ import {
 
 // ─── Config ──────────────────────────────────────────────────────────────────
 export const CONTRACT_ADDRESS =
-  "CCEC6DZQWPIOKMXGMP3ECKL5ETFTUAMTG26B6T5ICGNHSIBUJOZNRGQZ";
+  "CAQHJS675URVDAIMTGGCQ24AFKWSCOGQINWFZF2OS6KHHSJDYKAIQFA4";
 export const RPC_URL = "https://soroban-testnet.stellar.org";
 export const NETWORK_PASSPHRASE = "Test SDF Network ; September 2015";
 
