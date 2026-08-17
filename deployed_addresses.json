@@ -1,0 +1,7 @@
+{
+  "network": "testnet",
+  "rpcUrl": "https://soroban-testnet.stellar.org",
+  "contractId": "CC3S7N7G74FEXY53SBAQZPRK7Q4G2EFW2Y46W3V4A2XMRZJ5V4QJ74XY",
+  "arbitratorAddress": "GDKW3V4A2XMRZJ5V4QJ74XYCC3S7N7G74FEXY53SBAQZPRK7Q4G2EFW",
+  "deployedAt": "2026-08-18T00:50:00Z"
+}
