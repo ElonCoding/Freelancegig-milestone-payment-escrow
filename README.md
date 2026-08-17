@@ -2,14 +2,25 @@
 
 [![Rust Contracts CI](https://github.com/ElonCoding/Freelancegig-milestone-payment-escrow/actions/workflows/rust-contracts.yml/badge.svg)](https://github.com/ElonCoding/Freelancegig-milestone-payment-escrow/actions/workflows/rust-contracts.yml)
 [![Frontend CI](https://github.com/ElonCoding/Freelancegig-milestone-payment-escrow/actions/workflows/frontend.yml/badge.svg)](https://github.com/ElonCoding/Freelancegig-milestone-payment-escrow/actions/workflows/frontend.yml)
+[![Deployed on Vercel](https://img.shields.io/badge/Vercel-Live%20Demo-success?logo=vercel)](https://freelancegig-milestone-payment-escr-psi.vercel.app)
 
 Production-grade decentralized milestone payment escrow dApp built on **Stellar Soroban** using **Rust** smart contracts and **Next.js 16**.
+
+🚀 **Live Production App**: [https://freelancegig-milestone-payment-escr-psi.vercel.app](https://freelancegig-milestone-payment-escr-psi.vercel.app)
 
 ---
 
 ## Overview
 
 Freelancegig Escrow allows clients and freelancers to establish trustless, milestone-based contracts on-chain. Funds are safely locked in a Soroban smart contract, released per milestone upon client approval, or arbitrated via dispute resolution.
+
+---
+
+## Mobile Responsive Interface
+
+<p align="center">
+  <img src="docs/mobile_preview.png" alt="Mobile Responsive Interface" width="360" />
+</p>
 
 ---
 
@@ -48,6 +59,7 @@ Freelancegig Escrow allows clients and freelancers to establish trustless, miles
 - **Smart Contract Layer**: Rust 2021 Edition, Soroban SDK v25, `wasm32v1-none`
 - **Frontend Layer**: Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4
 - **Wallet & Client Integration**: `@stellar/freighter-api`, `@stellar/stellar-sdk`, Soroban JS Contract Client
+- **Deployment**: Vercel (`freelancegig-milestone-payment-escr-psi.vercel.app`)
 - **CI/CD**: GitHub Actions (`rust-contracts.yml`, `frontend.yml`)
 
 ---
@@ -64,12 +76,13 @@ Freelancegig Escrow allows clients and freelancers to establish trustless, miles
 
 ---
 
-## Deployed Contract Information (Stellar Testnet)
+## Deployed Contract & App Links
 
+- **Live Frontend App**: [https://freelancegig-milestone-payment-escr-psi.vercel.app](https://freelancegig-milestone-payment-escr-psi.vercel.app)
 - **Network**: Stellar Testnet
 - **RPC Endpoint**: `https://soroban-testnet.stellar.org`
 - **Contract Address**: [`CAQHJS675URVDAIMTGGCQ24AFKWSCOGQINWFZF2OS6KHHSJDYKAIQFA4`](https://stellar.expert/explorer/testnet/contract/CAQHJS675URVDAIMTGGCQ24AFKWSCOGQINWFZF2OS6KHHSJDYKAIQFA4)
-- **Stellar Expert Explorer**: [View Deployed Contract on Stellar Expert](https://stellar.expert/explorer/testnet/contract/CC3S7N7G74FEXY53SBAQZPRK7Q4G2EFW2Y46W3V4A2XMRZJ5V4QJ74XY)
+- **Stellar Expert Explorer**: [View Deployed Contract on Stellar Expert](https://stellar.expert/explorer/testnet/contract/CAQHJS675URVDAIMTGGCQ24AFKWSCOGQINWFZF2OS6KHHSJDYKAIQFA4)
 
 ---
 
