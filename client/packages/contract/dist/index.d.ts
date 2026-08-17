@@ -74,9 +74,10 @@ export interface Client {
     /**
      * Construct and simulate a create_escrow transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
      */
-    create_escrow: ({ client, freelancer, token }: {
+    create_escrow: ({ client, freelancer, arbitrator, token }: {
         client: string;
         freelancer: string;
+        arbitrator: string;
         token: string;
     }, options?: MethodOptions) => Promise<AssembledTransaction<u64>>;
     /**

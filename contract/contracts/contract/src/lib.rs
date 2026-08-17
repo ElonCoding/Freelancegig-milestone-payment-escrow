@@ -310,18 +310,19 @@ impl EscrowTrait for EscrowContract {
             &ms.amount,
         );
 
-        escrow.released += ms.amount;
+        let amount = ms.amount;
+        escrow.released += amount;
         ms.status = MilestoneStatus::Approved;
         escrow.milestones.set(milestone_index, ms);
         env.storage().persistent().set(&DataKey::Escrow(escrow_id), &escrow);
 
         env.events().publish(
             (symbol_short!("work"), symbol_short!("approve")),
-            (escrow_id, milestone_index, ms.amount),
+            (escrow_id, milestone_index, amount),
         );
         env.events().publish(
             (symbol_short!("funds"), symbol_short!("release")),
-            (escrow_id, milestone_index, escrow.freelancer.clone(), ms.amount),
+            (escrow_id, milestone_index, escrow.freelancer.clone(), amount),
         );
 
         Ok(())

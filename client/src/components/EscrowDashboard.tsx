@@ -51,6 +51,7 @@ function CreateEscrowForm({
 }) {
   const [freelancer, setFreelancer] = useState("");
   const [token, setToken] = useState("");
+  const [arbitrator, setArbitrator] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
 
@@ -59,7 +60,7 @@ function CreateEscrowForm({
     setLoading(true);
     setMsg("");
     try {
-      const id = await createEscrow(freelancer, token);
+      const id = await createEscrow(freelancer, token, arbitrator);
       setMsg(`Escrow created! ID: ${id}`);
       onCreated(Number(id));
     } catch (e) {
@@ -84,6 +85,13 @@ function CreateEscrowForm({
           placeholder="Token Address (C... or asset contract)"
           value={token}
           onChange={(e) => setToken(e.target.value)}
+          className="w-full px-4 py-2.5 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+        />
+        <input
+          type="text"
+          placeholder="Arbitrator Address (Optional: defaults to deployment arbitrator)"
+          value={arbitrator}
+          onChange={(e) => setArbitrator(e.target.value)}
           className="w-full px-4 py-2.5 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
         />
         <button

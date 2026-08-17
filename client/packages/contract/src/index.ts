@@ -84,7 +84,7 @@ export interface Client {
   /**
    * Construct and simulate a create_escrow transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
-  create_escrow: ({client, freelancer, token}: {client: string, freelancer: string, token: string}, options?: MethodOptions) => Promise<AssembledTransaction<u64>>
+  create_escrow: ({client, freelancer, arbitrator, token}: {client: string, freelancer: string, arbitrator: string, token: string}, options?: MethodOptions) => Promise<AssembledTransaction<u64>>
 
   /**
    * Construct and simulate a get_milestone transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
@@ -132,7 +132,7 @@ export class Client extends ContractClient {
         "AAAAAAAAAAAAAAALZnVuZF9lc2Nyb3cAAAAAAgAAAAAAAAAGY2FsbGVyAAAAAAATAAAAAAAAAAllc2Nyb3dfaWQAAAAAAAAGAAAAAA==",
         "AAAAAAAAAAAAAAANYWRkX21pbGVzdG9uZQAAAAAAAAQAAAAAAAAABmNhbGxlcgAAAAAAEwAAAAAAAAAJZXNjcm93X2lkAAAAAAAABgAAAAAAAAALZGVzY3JpcHRpb24AAAAAEAAAAAAAAAAGYW1vdW50AAAAAAALAAAAAA==",
         "AAAAAAAAAAAAAAANY2FuY2VsX2VzY3JvdwAAAAAAAAIAAAAAAAAABmNhbGxlcgAAAAAAEwAAAAAAAAAJZXNjcm93X2lkAAAAAAAABgAAAAA=",
-        "AAAAAAAAAAAAAAANY3JlYXRlX2VzY3JvdwAAAAAAAAMAAAAAAAAABmNsaWVudAAAAAAAEwAAAAAAAAAKZnJlZWxhbmNlcgAAAAAAEwAAAAAAAAAFdG9rZW4AAAAAAAATAAAAAQAAAAY=",
+        "AAAAAAAAAAAAAAANY3JlYXRlX2VzY3JvdwAAAAAAAAQAAAAAAAAABmNsaWVudAAAAAAAEwAAAAAAAAAKZnJlZWxhbmNlcgAAAAAAEwAAAAAAAAAKYXJiaXRyYXRvcgAAAAAAEwAAAAAAAAAFdG9rZW4AAAAAAAATAAAAAQAAAAY=",
         "AAAAAAAAAAAAAAANZ2V0X21pbGVzdG9uZQAAAAAAAAIAAAAAAAAACWVzY3Jvd19pZAAAAAAAAAYAAAAAAAAAD21pbGVzdG9uZV9pbmRleAAAAAAEAAAAAQAAB9AAAAAJTWlsZXN0b25lAAAA",
         "AAAAAAAAAAAAAAAQc3VibWl0X21pbGVzdG9uZQAAAAMAAAAAAAAABmNhbGxlcgAAAAAAEwAAAAAAAAAJZXNjcm93X2lkAAAAAAAABgAAAAAAAAAPbWlsZXN0b25lX2luZGV4AAAAAAQAAAAA",
         "AAAAAAAAAAAAAAARYXBwcm92ZV9taWxlc3RvbmUAAAAAAAADAAAAAAAAAAZjYWxsZXIAAAAAABMAAAAAAAAACWVzY3Jvd19pZAAAAAAAAAYAAAAAAAAAD21pbGVzdG9uZV9pbmRleAAAAAAEAAAAAA==",

@@ -19,15 +19,30 @@ export default function EventFeed() {
 
     async function fetchEvents() {
       try {
-        const response = await fetch(RPC_URL, {
+        // 1. Get latest ledger sequence to avoid retention errors
+        const ledgerRes = await fetch(RPC_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             jsonrpc: "2.0",
             id: 1,
+            method: "getLatestLedger",
+          }),
+        });
+        const ledgerJson = await ledgerRes.json();
+        const latestSequence = ledgerJson.result?.sequence || 1000;
+        const startLedger = Math.max(1, latestSequence - 2000);
+
+        // 2. Query contract events
+        const response = await fetch(RPC_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jsonrpc: "2.0",
+            id: 2,
             method: "getEvents",
             params: {
-              startLedger: 1,
+              startLedger,
               filters: [{ type: "contract", contractIds: [CONTRACT_ADDRESS] }],
               pagination: { limit: 10 },
             },

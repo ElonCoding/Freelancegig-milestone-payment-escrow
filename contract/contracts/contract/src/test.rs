@@ -3,7 +3,7 @@
 use super::*;
 use soroban_sdk::{
     testutils::Address as _,
-    token::{AdminClient as TokenAdminClient, Client as TokenClient},
+    token::{StellarAssetClient as TokenAdminClient, Client as TokenClient},
     Address, Env, String,
 };
 

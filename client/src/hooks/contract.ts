@@ -68,16 +68,21 @@ async function getClient(publicKey: string): Promise<EscrowClient> {
   });
 }
 
+export const DEFAULT_ARBITRATOR =
+  "GDKW3V4A2XMRZJ5V4QJ74XYCC3S7N7G74FEXY53SBAQZPRK7Q4G2EFW";
+
 // ─── State-Changing Functions ────────────────────────────────────────────────
 export async function createEscrow(
   freelancer: string,
   token: string,
+  arbitrator: string = DEFAULT_ARBITRATOR,
 ): Promise<string> {
   const caller = await ensureWalletAccess();
   const client = await getClient(caller);
   const tx = await client.create_escrow({
     client: caller,
     freelancer,
+    arbitrator: arbitrator || DEFAULT_ARBITRATOR,
     token,
   });
   const result = await tx.signAndSend();
