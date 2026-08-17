@@ -1,0 +1,47 @@
+name: Rust Contracts CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'contract/**'
+      - '.github/workflows/rust-contracts.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'contract/**'
+      - '.github/workflows/rust-contracts.yml'
+
+jobs:
+  rust-contracts:
+    name: Build & Test Contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32v1-none
+          components: clippy, rustfmt
+
+      - name: Cache Cargo Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            contract/target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cargo Test (Unit Tests)
+        run: |
+          cd contract
+          cargo test
+
+      - name: Contract WASM Check
+        run: |
+          cd contract
+          cargo check --target wasm32v1-none
