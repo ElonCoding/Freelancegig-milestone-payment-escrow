@@ -1,175 +1,163 @@
-﻿# Ercow — Freelancegig Milestone-Payment Escrow
+# Freelancegig Milestone-Payment Escrow dApp (Rust / Stellar Soroban)
 
-Milestone-based escrow on the **Stellar / Soroban** blockchain.  
-Rust smart contract + Next.js 16 frontend.
+[![CI Pipeline](https://github.com/ElonCoding/Freelancegig-milestone-payment-escrow/actions/workflows/ci.yml/badge.svg)](https://github.com/ElonCoding/Freelancegig-milestone-payment-escrow/actions)
 
----
-
-## Repo Structure
-
-```
-.
-├── client/                  # Next.js 16 frontend (React 19, Tailwind 4)
-│   └── packages/
-│       └── contract/        # Auto-generated Soroban JS bindings (must build first)
-└── contract/                # Rust workspace — Soroban smart contract
-    └── contracts/
-        └── contract/        # Escrow contract source
-```
+Production-grade decentralized milestone payment escrow dApp built on **Stellar Soroban** using **Rust** smart contracts and **Next.js 16**.
 
 ---
 
-## Prerequisites
+## Overview
 
-| Tool | Version | Install |
-|------|---------|---------|
-| Node.js | ≥ 18 | https://nodejs.org |
-| npm | ≥ 9 | ships with Node |
-| Rust | stable | https://rustup.rs |
-| Soroban CLI | latest | `cargo install --locked soroban-cli` |
-| Freighter Wallet | browser ext | https://freighter.app |
-
-> **Stellar network**: app targets **Testnet** by default. Get test XLM at https://friendbot.stellar.org
+Freelancegig Escrow allows clients and freelancers to establish trustless, milestone-based contracts on-chain. Funds are safely locked in a Soroban smart contract, released per milestone upon client approval, or arbitrated via dispute resolution.
 
 ---
 
-## 1 — Contract (Rust / Soroban)
+## Architecture Diagram
 
-`CONTRACT_ADDRESS = "CCEC6DZQWPIOKMXGMP3ECKL5ETFTUAMTG26B6T5ICGNHSIBUJOZNRGQZ"`
-
-### Build
-
-```bash
-cd contract
-cargo build --target wasm32-unknown-unknown --release
 ```
-
-WASM output → `contract/target/wasm32-unknown-unknown/release/contract.wasm`
-
-### Test
-
-```bash
-cd contract
-cargo test
++-------------------------------------------------------------------------+
+|                           NEXT.JS 16 FRONTEND                           |
+|  +---------------------+   +---------------------+  +-----------------+ |
+|  | Freighter Wallet UI |   |  Escrow Dashboard   |  | Event Feed UI   | |
+|  +----------+----------+   +----------+----------+  +--------+--------+ |
++-------------|-------------------------|----------------------|----------+
+              | Wallet Sign             | Read/Write RPC       | Event Poll
+              v                         v                      v
++-------------------------------------------------------------------------+
+|                         STELLAR SOROBAN TESTNET                         |
+|                                                                         |
+|   +-----------------------------------------------------------------+   |
+|   |                  EscrowContract (Rust / WASM)                   |   |
+|   |  - create_escrow()          - add_milestone()                   |   |
+|   |  - fund_escrow()            - submit_milestone()                |   |
+|   |  - approve_milestone()      - raise_dispute()                   |   |
+|   |  - resolve_dispute()        - cancel_escrow()                   |   |
+|   |                                                                 |   |
+|   |  * Indexed Events: env.events().publish(...)                    |   |
+|   |  * Error Handling: Custom EscrowError Enum                      |   |
+|   |  * Access Control: Strict Auth Check via Address::require_auth()|   |
+|   +-----------------------------------------------------------------+   |
++-------------------------------------------------------------------------+
 ```
-
-### Deploy to Testnet
-
-```bash
-soroban contract deploy \
-  --wasm contract/target/wasm32-unknown-unknown/release/contract.wasm \
-  --source <YOUR_SECRET_KEY> \
-  --network testnet
-```
-
-Copy the returned **Contract ID** — needed in frontend env.
-
----
-
-## 2 — JS Bindings (generate once, rebuild after contract changes)
-
-The `client/packages/contract/` package is auto-generated TypeScript bindings.  
-**Must be built before the frontend will compile.**
-
-```bash
-cd client/packages/contract
-npm install
-npm run build        # tsc -> dist/
-```
-
-> If contract ABI changes -> regenerate with:
-> ```bash
-> soroban contract bindings typescript \
->   --contract-id <CONTRACT_ID> \
->   --network testnet \
->   --output-dir client/packages/contract
-> ```
-
----
-
-## 3 — Frontend (Next.js)
-
-### Install
-
-```bash
-cd client
-npm install
-```
-
-### Environment
-
-Create `client/.env.local`:
-
-```env
-NEXT_PUBLIC_CONTRACT_ID=<YOUR_DEPLOYED_CONTRACT_ID>
-NEXT_PUBLIC_NETWORK_PASSPHRASE=Test SDF Network ; September 2015
-NEXT_PUBLIC_RPC_URL=https://soroban-testnet.stellar.org
-```
-
-### Run Dev Server
-
-```bash
-cd client
-npm run dev
-```
-
-App -> **http://localhost:3000**
-
-### Build for Production
-
-```bash
-cd client
-npm run build
-npm start
-```
-
----
-
-## Quick Start (all steps, in order)
-
-```bash
-# 1. Clone
-git clone https://github.com/ElonCoding/Ercow.git
-cd Ercow
-
-# 2. Build contract
-cd contract
-cargo build --target wasm32-unknown-unknown --release
-
-# 3. Deploy (testnet) — grab CONTRACT_ID from output
-soroban contract deploy \
-  --wasm target/wasm32-unknown-unknown/release/contract.wasm \
-  --source <SECRET_KEY> \
-  --network testnet
-
-# 4. Build JS bindings
-cd ../client/packages/contract
-npm install && npm run build
-
-# 5. Set env vars
-cd ../../
-cp .env.example .env.local   # or create manually (see above)
-
-# 6. Run frontend
-npm install && npm run dev
-```
-
----
-
-## Common Errors
-
-| Error | Fix |
-|-------|-----|
-| `Module not found: Can't resolve 'contract'` | `cd client/packages/contract && npm install && npm run build` |
-| `bun: command not found` | Use `npm` instead, or install bun: https://bun.sh |
-| Freighter not connecting | Install Freighter extension + switch to Testnet inside it |
-| `HostError: Error(Contract, ...)` | Wrong contract ID in `.env.local` or contract not deployed |
 
 ---
 
 ## Tech Stack
 
-- **Smart Contract** — Rust, Soroban SDK 25, Stellar Testnet
-- **Frontend** — Next.js 16, React 19, TypeScript, Tailwind CSS 4
-- **Wallet** — Freighter (browser extension)
-- **RPC** — `@stellar/stellar-sdk` + Soroban RPC
+- **Smart Contract Layer**: Rust 2021 Edition, Soroban SDK v25, `wasm32-unknown-unknown`
+- **Frontend Layer**: Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4
+- **Wallet & Client Integration**: `@stellar/freighter-api`, `@stellar/stellar-sdk`, Soroban JS Contract Client
+- **CI/CD**: GitHub Actions (`.github/workflows/ci.yml`)
+
+---
+
+## Key Features
+
+- ✅ **Milestone Payment Lifecycle**: Pending → Submitted → Approved → Released (or Disputed / Refunded).
+- ✅ **Arbitration & Dispute Resolution**: On-chain dispute logging and arbitrator payout resolution.
+- ✅ **Custom `EscrowError` Enum**: Strongly-typed errors preventing panics (`Unauthorized`, `InvalidAmount`, `NotFunded`, etc.).
+- ✅ **Indexed On-Chain Events**: Contract logs published via `env.events().publish(...)` for real-time frontend streaming.
+- ✅ **Real-Time Event Stream**: Live Activity Feed component tracking contract interactions via RPC.
+- ✅ **Freighter Wallet Integration**: Connect/disconnect flow, network checking, signed transaction submission.
+- ✅ **Mobile Responsive UI**: Styled for 375px (mobile), 768px (tablet), and 1024px+ (desktop).
+
+---
+
+## Deployed Contract Information (Stellar Testnet)
+
+- **Network**: Stellar Testnet
+- **RPC Endpoint**: `https://soroban-testnet.stellar.org`
+- **Contract Address**: [`CCEC6DZQWPIOKMXGMP3ECKL5ETFTUAMTG26B6T5ICGNHSIBUJOZNRGQZ`](https://stellar.expert/explorer/testnet/contract/CCEC6DZQWPIOKMXGMP3ECKL5ETFTUAMTG26B6T5ICGNHSIBUJOZNRGQZ)
+- **Stellar Expert Explorer**: [View Deployed Contract on Stellar Expert](https://stellar.expert/explorer/testnet/contract/CCEC6DZQWPIOKMXGMP3ECKL5ETFTUAMTG26B6T5ICGNHSIBUJOZNRGQZ)
+
+---
+
+## Setup & Installation
+
+### Prerequisites
+- **Rust**: 1.75+ with `wasm32-unknown-unknown` target
+- **Node.js**: 20+
+- **Freighter Wallet**: Browser Extension set to **Testnet**
+
+### 1. Clone Repository
+```bash
+git clone https://github.com/ElonCoding/Freelancegig-milestone-payment-escrow.git
+cd Freelancegig-milestone-payment-escrow
+```
+
+### 2. Smart Contract Build & Test
+```bash
+cd contract
+cargo build --target wasm32-unknown-unknown --release
+cargo test
+```
+
+### 3. Frontend Setup & Local Server
+```bash
+cd ../client
+npm install
+npm run dev
+```
+Open **http://localhost:3000** in your browser.
+
+---
+
+## Smart Contract Unit Tests
+
+12 comprehensive Rust unit tests covering all execution paths:
+
+```text
+running 12 tests
+test test::test_create_and_fund_project ... ok
+test test::test_submit_work_and_approve ... ok
+test test::test_release_funds ... ok
+test test::test_dispute_flow_freelancer_wins ... ok
+test test::test_dispute_flow_client_wins ... ok
+test test::test_access_control_unauthorized_approve ... ok
+test test::test_access_control_unauthorized_submit ... ok
+test test::test_access_control_unauthorized_dispute_resolve ... ok
+test test::test_zero_amount_milestone_fails ... ok
+test test::test_double_funding_fails ... ok
+test test::test_cannot_approve_unsubmitted_milestone ... ok
+test test::test_cancel_project_and_refund ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured
+```
+
+---
+
+## Repository Structure
+
+```
+.
+├── .github/
+│   └── workflows/
+│       └── ci.yml               # GitHub Actions CI workflow
+├── contract/
+│   ├── Cargo.toml               # Workspace Cargo configuration
+│   └── contracts/
+│       └── contract/
+│           ├── Cargo.toml
+│           └── src/
+│               ├── lib.rs       # Single-file unified Rust escrow contract
+│               └── test.rs      # 12 comprehensive unit tests
+├── client/
+│   ├── src/
+│   │   ├── app/
+│   │   │   └── page.tsx         # Responsive dashboard homepage
+│   │   ├── components/
+│   │   │   ├── EscrowDashboard.tsx
+│   │   │   ├── EventFeed.tsx   # Real-time event stream
+│   │   │   └── Navbar.tsx      # Freighter wallet button
+│   │   └── hooks/
+│   │       └── contract.ts     # Soroban RPC & wallet interface
+│   └── package.json
+├── deployed_addresses.json      # Deployed contract metadata
+└── README.md
+```
+
+---
+
+## License
+
+MIT
