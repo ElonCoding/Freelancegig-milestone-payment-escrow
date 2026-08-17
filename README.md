@@ -1,6 +1,7 @@
 # Freelancegig Milestone-Payment Escrow dApp (Rust / Stellar Soroban)
 
-[![CI Pipeline](https://github.com/ElonCoding/Freelancegig-milestone-payment-escrow/actions/workflows/ci.yml/badge.svg)](https://github.com/ElonCoding/Freelancegig-milestone-payment-escrow/actions)
+[![Rust Contracts CI](https://github.com/ElonCoding/Freelancegig-milestone-payment-escrow/actions/workflows/rust-contracts.yml/badge.svg)](https://github.com/ElonCoding/Freelancegig-milestone-payment-escrow/actions/workflows/rust-contracts.yml)
+[![Frontend CI](https://github.com/ElonCoding/Freelancegig-milestone-payment-escrow/actions/workflows/frontend.yml/badge.svg)](https://github.com/ElonCoding/Freelancegig-milestone-payment-escrow/actions/workflows/frontend.yml)
 
 Production-grade decentralized milestone payment escrow dApp built on **Stellar Soroban** using **Rust** smart contracts and **Next.js 16**.
 
@@ -44,10 +45,10 @@ Freelancegig Escrow allows clients and freelancers to establish trustless, miles
 
 ## Tech Stack
 
-- **Smart Contract Layer**: Rust 2021 Edition, Soroban SDK v25, `wasm32-unknown-unknown`
+- **Smart Contract Layer**: Rust 2021 Edition, Soroban SDK v25, `wasm32v1-none`
 - **Frontend Layer**: Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4
 - **Wallet & Client Integration**: `@stellar/freighter-api`, `@stellar/stellar-sdk`, Soroban JS Contract Client
-- **CI/CD**: GitHub Actions (`.github/workflows/ci.yml`)
+- **CI/CD**: GitHub Actions (`rust-contracts.yml`, `frontend.yml`)
 
 ---
 
@@ -132,7 +133,8 @@ test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured
 .
 ├── .github/
 │   └── workflows/
-│       └── ci.yml               # GitHub Actions CI workflow
+│       ├── frontend.yml         # Frontend build & lint CI workflow
+│       └── rust-contracts.yml   # Soroban Rust contract build & test CI workflow
 ├── contract/
 │   ├── Cargo.toml               # Workspace Cargo configuration
 │   └── contracts/
