@@ -11,6 +11,7 @@ import {
   getEscrow,
   getMilestoneCount,
   getMilestone,
+  DEFAULT_ARBITRATOR,
   type Escrow,
   type Milestone,
   type MilestoneStatus,
@@ -18,6 +19,7 @@ import {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function shortenAddr(addr: string) {
+  if (!addr) return "";
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 }
 
@@ -30,16 +32,16 @@ function statusName(status: MilestoneStatus): string {
   return status.tag;
 }
 
-function statusColor(status: MilestoneStatus) {
+function statusBadge(status: MilestoneStatus) {
   switch (status.tag) {
     case "Pending":
-      return "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400";
+      return "bg-neutral-900 text-neutral-400 border border-neutral-800";
     case "Submitted":
-      return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
+      return "bg-amber-950/50 text-amber-300 border border-amber-800/60";
     case "Approved":
-      return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
+      return "bg-emerald-950/50 text-emerald-300 border border-emerald-800/60";
     default:
-      return "bg-zinc-100 text-zinc-600";
+      return "bg-neutral-900 text-neutral-400 border border-neutral-800";
   }
 }
 
@@ -61,7 +63,7 @@ function CreateEscrowForm({
     setMsg("");
     try {
       const id = await createEscrow(freelancer, token, arbitrator);
-      setMsg(`Escrow created! ID: ${id}`);
+      setMsg(`Escrow created successfully! Escrow ID: #${id}`);
       onCreated(Number(id));
     } catch (e) {
       setMsg(`Error: ${String(e)}`);
@@ -69,40 +71,93 @@ function CreateEscrowForm({
     setLoading(false);
   }
 
+  function fillDefaultArbitrator() {
+    setArbitrator(DEFAULT_ARBITRATOR);
+  }
+
   return (
-    <div className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
-      <h2 className="text-lg font-semibold mb-4">Create New Escrow</h2>
-      <div className="space-y-3">
-        <input
-          type="text"
-          placeholder="Freelancer Address (G...)"
-          value={freelancer}
-          onChange={(e) => setFreelancer(e.target.value)}
-          className="w-full px-4 py-2.5 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
-        />
-        <input
-          type="text"
-          placeholder="Token Address (C... or asset contract)"
-          value={token}
-          onChange={(e) => setToken(e.target.value)}
-          className="w-full px-4 py-2.5 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
-        />
-        <input
-          type="text"
-          placeholder="Arbitrator Address (Optional: defaults to deployment arbitrator)"
-          value={arbitrator}
-          onChange={(e) => setArbitrator(e.target.value)}
-          className="w-full px-4 py-2.5 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
-        />
+    <div className="rounded-xl border border-neutral-800 bg-neutral-950/70 p-6 backdrop-blur-md">
+      <div className="flex items-center justify-between mb-5">
+        <div>
+          <h2 className="text-base font-semibold text-white tracking-tight">
+            Create Escrow Contract
+          </h2>
+          <p className="text-xs text-neutral-400 mt-0.5">
+            Instantiate a new on-chain milestone escrow on Soroban
+          </p>
+        </div>
+        <span className="px-2.5 py-1 rounded-full text-[10px] font-mono text-neutral-400 bg-neutral-900 border border-neutral-800">
+          New Contract
+        </span>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-xs font-mono text-neutral-400 mb-1.5">
+            Freelancer Wallet Address *
+          </label>
+          <input
+            type="text"
+            placeholder="G..."
+            value={freelancer}
+            onChange={(e) => setFreelancer(e.target.value)}
+            className="w-full px-3.5 py-2.5 text-xs font-mono rounded-lg border border-neutral-800 bg-neutral-900/80 text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600 transition-all"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-mono text-neutral-400 mb-1.5">
+            Token Contract Address *
+          </label>
+          <input
+            type="text"
+            placeholder="C... or native token asset"
+            value={token}
+            onChange={(e) => setToken(e.target.value)}
+            className="w-full px-3.5 py-2.5 text-xs font-mono rounded-lg border border-neutral-800 bg-neutral-900/80 text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600 transition-all"
+          />
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="text-xs font-mono text-neutral-400">
+              Arbitrator Address (Optional)
+            </label>
+            <button
+              type="button"
+              onClick={fillDefaultArbitrator}
+              className="text-[10px] font-mono text-neutral-400 hover:text-white underline underline-offset-2 transition-colors"
+            >
+              Use Default
+            </button>
+          </div>
+          <input
+            type="text"
+            placeholder="G... (defaults to system arbitrator)"
+            value={arbitrator}
+            onChange={(e) => setArbitrator(e.target.value)}
+            className="w-full px-3.5 py-2.5 text-xs font-mono rounded-lg border border-neutral-800 bg-neutral-900/80 text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600 transition-all"
+          />
+        </div>
+
         <button
           onClick={handleCreate}
           disabled={loading || !freelancer || !token}
-          className="w-full py-2.5 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          className="w-full py-2.5 px-4 text-xs font-medium rounded-lg bg-white text-black hover:bg-neutral-200 disabled:opacity-40 transition-all shadow-sm"
         >
-          {loading ? "Creating..." : "Create Escrow"}
+          {loading ? "Creating Escrow..." : "Initialize Escrow Contract"}
         </button>
+
         {msg && (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">{msg}</p>
+          <div
+            className={`p-3 rounded-lg border text-xs font-mono ${
+              msg.startsWith("Error")
+                ? "bg-rose-950/30 border-rose-800/60 text-rose-300"
+                : "bg-emerald-950/30 border-emerald-800/60 text-emerald-300"
+            }`}
+          >
+            {msg}
+          </div>
         )}
       </div>
     </div>
@@ -143,15 +198,17 @@ function AddMilestoneForm({
   }
 
   return (
-    <div className="p-4 rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900">
-      <h3 className="text-sm font-medium mb-3">Add Milestone</h3>
-      <div className="flex gap-2">
+    <div className="p-4 rounded-xl border border-neutral-800 bg-neutral-900/50">
+      <h3 className="text-xs font-semibold text-neutral-300 mb-3 font-mono uppercase tracking-wider">
+        + Add New Milestone
+      </h3>
+      <div className="flex flex-col sm:flex-row gap-2">
         <input
           type="text"
-          placeholder="Description"
+          placeholder="Deliverable Description"
           value={desc}
           onChange={(e) => setDesc(e.target.value)}
-          className="flex-1 px-3 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 px-3 py-2 text-xs rounded-lg border border-neutral-800 bg-black text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-600"
         />
         <input
           type="number"
@@ -159,17 +216,19 @@ function AddMilestoneForm({
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           step="0.0000001"
-          className="w-32 px-3 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full sm:w-36 px-3 py-2 text-xs font-mono rounded-lg border border-neutral-800 bg-black text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-600"
         />
         <button
           onClick={handleAdd}
           disabled={loading || !desc || !amount}
-          className="px-4 py-2 text-sm font-medium rounded-lg bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 hover:opacity-90 disabled:opacity-50 transition-colors whitespace-nowrap"
+          className="px-4 py-2 text-xs font-medium rounded-lg bg-neutral-800 text-white hover:bg-neutral-700 disabled:opacity-40 transition-colors whitespace-nowrap"
         >
-          {loading ? "..." : "Add"}
+          {loading ? "..." : "Add Milestone"}
         </button>
       </div>
-      {msg && <p className="text-xs text-zinc-500 mt-2">{msg}</p>}
+      {msg && (
+        <p className="text-[11px] font-mono text-neutral-400 mt-2">{msg}</p>
+      )}
     </div>
   );
 }
@@ -222,41 +281,46 @@ function MilestoneCard({
   }
 
   return (
-    <div className="flex items-center justify-between p-4 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800">
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-xs font-mono text-zinc-400">#{index}</span>
+    <div className="p-4 rounded-xl bg-neutral-900/40 border border-neutral-800/80 hover:border-neutral-700/80 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2 mb-1.5">
+          <span className="text-[11px] font-mono text-neutral-500">#{index + 1}</span>
           <span
-            className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusColor(milestone.status)}`}
+            className={`text-[10px] font-mono font-medium px-2 py-0.5 rounded-md ${statusBadge(
+              milestone.status
+            )}`}
           >
             {statusName(milestone.status)}
           </span>
         </div>
-        <p className="text-sm font-medium truncate">{milestone.description}</p>
-        <p className="text-xs text-zinc-500">
-          {formatAmount(milestone.amount)} XLM
+        <p className="text-xs font-medium text-neutral-200 truncate">
+          {milestone.description}
+        </p>
+        <p className="text-xs font-mono text-neutral-400 mt-1">
+          {formatAmount(milestone.amount)} <span className="text-neutral-500">XLM</span>
         </p>
       </div>
-      <div className="ml-4 flex items-center gap-2">
+
+      <div className="flex items-center gap-2 self-end sm:self-center">
         {milestone.status.tag === "Pending" && isFreelancer && (
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-yellow-500 text-white hover:bg-yellow-600 disabled:opacity-50 transition-colors"
+            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 disabled:opacity-40 transition-colors"
           >
-            {loading ? "..." : "Submit"}
+            {loading ? "Submitting..." : "Submit Deliverable"}
           </button>
         )}
         {milestone.status.tag === "Submitted" && isClient && (
           <button
             onClick={handleApprove}
             disabled={loading}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 transition-colors"
+            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 disabled:opacity-40 transition-colors"
           >
-            {loading ? "..." : "Approve & Pay"}
+            {loading ? "Approving..." : "Approve & Release Funds"}
           </button>
         )}
-        {msg && <span className="text-xs text-zinc-500">{msg}</span>}
+        {msg && <span className="text-xs font-mono text-neutral-400">{msg}</span>}
       </div>
     </div>
   );
@@ -312,46 +376,59 @@ function EscrowDetail({
   const progress = totalNum > 0 ? (releasedNum / totalNum) * 100 : 0;
 
   return (
-    <div className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
-      <div className="flex items-start justify-between mb-4">
+    <div className="rounded-xl border border-neutral-800 bg-neutral-950/70 p-6 backdrop-blur-md space-y-6">
+      <div className="flex items-center justify-between border-b border-neutral-800/80 pb-4">
         <div>
-          <h2 className="text-lg font-semibold">Escrow #{escrowId}</h2>
-          <span
-            className={`inline-block mt-1 text-xs font-medium px-2 py-0.5 rounded-full ${escrow.funded ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"}`}
-          >
-            {escrow.funded ? "Funded" : "Draft"}
-          </span>
+          <div className="flex items-center gap-2">
+            <h2 className="text-base font-semibold text-white">Escrow Contract #{escrowId}</h2>
+            <span
+              className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${
+                escrow.funded
+                  ? "bg-emerald-950/50 text-emerald-300 border-emerald-800/60"
+                  : "bg-neutral-900 text-neutral-400 border-neutral-800"
+              }`}
+            >
+              {escrow.funded ? "● Active & Funded" : "○ Draft State"}
+            </span>
+          </div>
+          <p className="text-xs text-neutral-500 font-mono mt-1">
+            Contract ID: #{escrowId}
+          </p>
         </div>
         {isClient && escrow.funded && (
           <button
             onClick={handleCancel}
             disabled={loading}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg border border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20 disabled:opacity-50 transition-colors"
+            className="px-3 py-1.5 text-xs font-mono rounded-lg border border-rose-900/60 text-rose-400 hover:bg-rose-950/40 disabled:opacity-40 transition-colors"
           >
-            Cancel Escrow
+            Cancel & Refund
           </button>
         )}
       </div>
 
       {/* Info Grid */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-xl bg-neutral-900/40 border border-neutral-800/60">
         <div>
-          <p className="text-xs text-zinc-500 mb-1">Client</p>
-          <p className="text-sm font-mono">{shortenAddr(escrow.client)}</p>
+          <p className="text-[11px] font-mono text-neutral-500 mb-1">Client</p>
+          <p className="text-xs font-mono text-neutral-200 truncate">
+            {shortenAddr(escrow.client)}
+          </p>
         </div>
         <div>
-          <p className="text-xs text-zinc-500 mb-1">Freelancer</p>
-          <p className="text-sm font-mono">{shortenAddr(escrow.freelancer)}</p>
+          <p className="text-[11px] font-mono text-neutral-500 mb-1">Freelancer</p>
+          <p className="text-xs font-mono text-neutral-200 truncate">
+            {shortenAddr(escrow.freelancer)}
+          </p>
         </div>
         <div>
-          <p className="text-xs text-zinc-500 mb-1">Total</p>
-          <p className="text-sm font-semibold">
+          <p className="text-[11px] font-mono text-neutral-500 mb-1">Total Amount</p>
+          <p className="text-xs font-mono font-semibold text-white">
             {formatAmount(escrow.total)} XLM
           </p>
         </div>
         <div>
-          <p className="text-xs text-zinc-500 mb-1">Released</p>
-          <p className="text-sm font-semibold text-green-600 dark:text-green-400">
+          <p className="text-[11px] font-mono text-neutral-500 mb-1">Released Amount</p>
+          <p className="text-xs font-mono font-semibold text-emerald-400">
             {formatAmount(escrow.released)} XLM
           </p>
         </div>
@@ -359,14 +436,14 @@ function EscrowDetail({
 
       {/* Progress Bar */}
       {escrow.funded && (
-        <div className="mb-6">
-          <div className="flex justify-between text-xs text-zinc-500 mb-1">
-            <span>Progress</span>
+        <div>
+          <div className="flex justify-between text-xs font-mono text-neutral-400 mb-1.5">
+            <span>Funding Release Progress</span>
             <span>{progress.toFixed(0)}%</span>
           </div>
-          <div className="h-2 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+          <div className="h-1.5 rounded-full bg-neutral-900 border border-neutral-800 overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-500"
+              className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -378,26 +455,32 @@ function EscrowDetail({
         <button
           onClick={handleFund}
           disabled={loading}
-          className="w-full mb-6 py-2.5 text-sm font-medium rounded-lg bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-50 transition-colors"
+          className="w-full py-2.5 text-xs font-medium rounded-lg bg-emerald-500 text-black hover:bg-emerald-400 disabled:opacity-40 transition-colors shadow-sm"
         >
           {loading
             ? "Processing..."
-            : `Fund Escrow (${formatAmount(escrow.total)} XLM)`}
+            : `Lock & Fund Escrow (${formatAmount(escrow.total)} XLM)`}
         </button>
       )}
 
       {/* Add Milestone */}
       {isClient && !escrow.funded && (
-        <div className="mb-6">
-          <AddMilestoneForm escrowId={escrowId} onAdded={onRefresh} />
-        </div>
+        <AddMilestoneForm escrowId={escrowId} onAdded={onRefresh} />
       )}
 
       {/* Milestones */}
       <div>
-        <h3 className="text-sm font-medium mb-3 text-zinc-600 dark:text-zinc-400">
-          Milestones ({milestones.length})
-        </h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-xs font-semibold text-neutral-300 font-mono uppercase tracking-wider">
+            Contract Milestones ({milestones.length})
+          </h3>
+          <button
+            onClick={onRefresh}
+            className="text-[11px] font-mono text-neutral-500 hover:text-neutral-300 transition-colors"
+          >
+            Refresh Status
+          </button>
+        </div>
         <div className="space-y-2">
           {milestones.map((ms, i) => (
             <MilestoneCard
@@ -411,16 +494,18 @@ function EscrowDetail({
             />
           ))}
           {milestones.length === 0 && (
-            <p className="text-sm text-zinc-400 py-4 text-center">
-              No milestones yet.{" "}
-              {isClient ? "Add one above." : "Waiting for client."}
-            </p>
+            <div className="p-8 text-center rounded-xl border border-dashed border-neutral-800 text-neutral-500 text-xs font-mono">
+              No milestones defined for this escrow yet.{" "}
+              {isClient ? "Add one above." : "Waiting for client to add milestones."}
+            </div>
           )}
         </div>
       </div>
 
       {msg && (
-        <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">{msg}</p>
+        <div className="p-3 rounded-lg border border-neutral-800 bg-neutral-900 text-xs font-mono text-neutral-300">
+          {msg}
+        </div>
       )}
     </div>
   );
@@ -437,6 +522,7 @@ export default function EscrowDashboard({
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [activeTab, setActiveTab] = useState<"manage" | "create">("manage");
 
   async function loadEscrow(id: number) {
     setLoading(true);
@@ -464,52 +550,100 @@ export default function EscrowDashboard({
   }
 
   return (
-    <div className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold mb-1">Milestone Payment Escrow</h1>
-        <p className="text-sm text-zinc-500">
-          Create escrows, add milestones, fund, and manage payments on Stellar
-          testnet.
-        </p>
-      </div>
-
-      <CreateEscrowForm onCreated={(id) => setEscrowId(String(id))} />
-
-      {/* View Escrow */}
-      <div className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
-        <h2 className="text-lg font-semibold mb-4">View Escrow</h2>
+    <div className="w-full space-y-6">
+      {/* Tab Switcher */}
+      <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
         <div className="flex gap-2">
-          <input
-            type="number"
-            placeholder="Escrow ID"
-            value={escrowId}
-            onChange={(e) => setEscrowId(e.target.value)}
-            className="flex-1 px-4 py-2.5 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
-          />
           <button
-            onClick={() => {
-              const id = Number(escrowId);
-              if (!isNaN(id)) loadEscrow(id);
-            }}
-            disabled={loading || !escrowId}
-            className="px-6 py-2.5 text-sm font-medium rounded-lg bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 hover:opacity-90 disabled:opacity-50 transition-colors"
+            onClick={() => setActiveTab("manage")}
+            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+              activeTab === "manage"
+                ? "bg-neutral-800 text-white border border-neutral-700"
+                : "text-neutral-400 hover:text-neutral-200"
+            }`}
           >
-            {loading ? "Loading..." : "Load"}
+            Manage Escrow
+          </button>
+          <button
+            onClick={() => setActiveTab("create")}
+            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+              activeTab === "create"
+                ? "bg-neutral-800 text-white border border-neutral-700"
+                : "text-neutral-400 hover:text-neutral-200"
+            }`}
+          >
+            + Create Escrow
           </button>
         </div>
-        {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
+
+        <span className="text-[11px] font-mono text-neutral-500 hidden sm:inline">
+          Connected: {shortenAddr(walletAddress)}
+        </span>
       </div>
 
-      {/* Escrow Detail */}
-      {escrow && (
-        <EscrowDetail
-          escrowId={Number(escrowId)}
-          escrow={escrow}
-          milestones={milestones}
-          walletAddress={walletAddress}
-          onRefresh={handleRefresh}
+      {activeTab === "create" ? (
+        <CreateEscrowForm
+          onCreated={(id) => {
+            setEscrowId(String(id));
+            setActiveTab("manage");
+            loadEscrow(id);
+          }}
         />
+      ) : (
+        <div className="space-y-6">
+          {/* View Escrow Search Card */}
+          <div className="rounded-xl border border-neutral-800 bg-neutral-950/70 p-6 backdrop-blur-md">
+            <h2 className="text-base font-semibold text-white mb-1">
+              Load Escrow Contract
+            </h2>
+            <p className="text-xs text-neutral-400 mb-4">
+              Enter an on-chain Escrow ID to view details, milestones, and status
+            </p>
+            <div className="flex gap-2">
+              <input
+                type="number"
+                placeholder="Escrow ID (e.g. 1)"
+                value={escrowId}
+                onChange={(e) => setEscrowId(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    const id = Number(escrowId);
+                    if (!isNaN(id)) loadEscrow(id);
+                  }
+                }}
+                className="flex-1 px-3.5 py-2.5 text-xs font-mono rounded-lg border border-neutral-800 bg-neutral-900/80 text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-600"
+              />
+              <button
+                onClick={() => {
+                  const id = Number(escrowId);
+                  if (!isNaN(id)) loadEscrow(id);
+                }}
+                disabled={loading || !escrowId}
+                className="px-5 py-2.5 text-xs font-medium rounded-lg bg-neutral-800 text-white hover:bg-neutral-700 disabled:opacity-40 transition-colors"
+              >
+                {loading ? "Loading..." : "Load Escrow"}
+              </button>
+            </div>
+            {error && (
+              <div className="mt-3 p-3 rounded-lg bg-rose-950/30 border border-rose-800/60 text-xs font-mono text-rose-300">
+                {error}
+              </div>
+            )}
+          </div>
+
+          {/* Escrow Detail */}
+          {escrow && (
+            <EscrowDetail
+              escrowId={Number(escrowId)}
+              escrow={escrow}
+              milestones={milestones}
+              walletAddress={walletAddress}
+              onRefresh={handleRefresh}
+            />
+          )}
+        </div>
       )}
     </div>
   );
 }
+

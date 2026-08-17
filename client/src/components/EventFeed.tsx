@@ -81,53 +81,65 @@ export default function EventFeed() {
   }, []);
 
   return (
-    <div className="p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold flex items-center gap-2">
-          <span>⚡ Real-Time On-Chain Event Stream</span>
-          <span
-            className={`w-2.5 h-2.5 rounded-full ${
-              connected ? "bg-green-500 animate-pulse" : "bg-red-500"
-            }`}
-          />
-        </h2>
-        <span className="text-xs font-mono text-zinc-500">
-          {connected ? "Subscribed to RPC" : "Connection Disconnected"}
+    <div className="rounded-xl border border-neutral-800 bg-neutral-950/70 p-5 backdrop-blur-md">
+      <div className="flex items-center justify-between mb-4 border-b border-neutral-800/80 pb-3">
+        <div className="flex items-center gap-2.5">
+          <span className="relative flex h-2 w-2">
+            <span
+              className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                connected ? "bg-emerald-400" : "bg-rose-400"
+              }`}
+            />
+            <span
+              className={`relative inline-flex rounded-full h-2 w-2 ${
+                connected ? "bg-emerald-500" : "bg-rose-500"
+              }`}
+            />
+          </span>
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-300 font-mono">
+            On-Chain Event Stream
+          </h2>
+        </div>
+        <span className="text-[11px] font-mono text-neutral-500">
+          {connected ? "Subscribed (6s poll)" : "RPC Disconnected"}
         </span>
       </div>
 
       {!connected && (
-        <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-xs text-red-600 dark:text-red-400">
+        <div className="mb-3 px-3 py-2 rounded-lg bg-rose-950/30 border border-rose-800/50 text-xs font-mono text-rose-300">
           ⚠️ Connection lost to Soroban RPC node. Retrying in background...
         </div>
       )}
 
-      <div className="space-y-2 max-h-48 overflow-y-auto font-mono text-xs">
+      <div className="space-y-2 max-h-56 overflow-y-auto font-mono text-xs pr-1">
         {events.length > 0 ? (
           events.map((evt) => (
             <div
               key={evt.id}
-              className="p-2.5 rounded bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 flex justify-between items-center"
+              className="p-3 rounded-lg bg-neutral-900/60 border border-neutral-800/80 hover:border-neutral-700 transition-colors flex justify-between items-start gap-4"
             >
-              <div>
-                <span className="text-blue-600 dark:text-blue-400 font-semibold mr-2">
-                  [{evt.topic}]
-                </span>
-                <span className="text-zinc-600 dark:text-zinc-400 truncate max-w-md inline-block align-bottom">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-neutral-800 text-neutral-300 border border-neutral-700/60">
+                    {evt.topic}
+                  </span>
+                </div>
+                <p className="text-neutral-400 text-[11px] truncate font-mono">
                   {evt.data}
-                </span>
+                </p>
               </div>
-              <span className="text-zinc-400 text-[10px] whitespace-nowrap ml-2">
+              <span className="text-neutral-500 text-[10px] whitespace-nowrap pt-0.5">
                 {evt.timestamp}
               </span>
             </div>
           ))
         ) : (
-          <p className="text-zinc-400 py-4 text-center">
-            Listening for contract events...
-          </p>
+          <div className="py-8 text-center text-neutral-500 text-xs font-mono">
+            Listening for contract interactions on-chain...
+          </div>
         )}
       </div>
     </div>
   );
 }
+
