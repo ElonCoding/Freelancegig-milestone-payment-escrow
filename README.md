@@ -69,7 +69,7 @@ Freelancegig Escrow allows clients and freelancers to establish trustless, miles
 - **Network**: Stellar Testnet
 - **RPC Endpoint**: `https://soroban-testnet.stellar.org`
 - **Contract Address**: [`CAQHJS675URVDAIMTGGCQ24AFKWSCOGQINWFZF2OS6KHHSJDYKAIQFA4`](https://stellar.expert/explorer/testnet/contract/CAQHJS675URVDAIMTGGCQ24AFKWSCOGQINWFZF2OS6KHHSJDYKAIQFA4)
-- **Stellar Expert Explorer**: [View Deployed Contract on Stellar Expert](https://stellar.expert/explorer/testnet/contract/CAQHJS675URVDAIMTGGCQ24AFKWSCOGQINWFZF2OS6KHHSJDYKAIQFA4)
+- **Stellar Expert Explorer**: [View Deployed Contract on Stellar Expert](https://stellar.expert/explorer/testnet/contract/CC3S7N7G74FEXY53SBAQZPRK7Q4G2EFW2Y46W3V4A2XMRZJ5V4QJ74XY)
 
 ---
 
