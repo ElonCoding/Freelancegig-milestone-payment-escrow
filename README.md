@@ -16,10 +16,26 @@ Freelancegig Escrow allows clients and freelancers to establish trustless, miles
 
 ---
 
-## Mobile Responsive Interface
+## Responsive UI Showcase
+
+### 1. Landing Page (Desktop & Mobile)
 
 <p align="center">
-  <img src="docs/mobile_preview.png" alt="Mobile Responsive Interface" width="360" />
+  <img src="docs/desktop_landing.png" alt="Desktop Landing View" width="700" />
+</p>
+<p align="center">
+  <img src="docs/mobile_landing.png" alt="Mobile Landing View" width="320" />
+</p>
+
+---
+
+### 2. Connected Escrow Workspace (Desktop & Mobile)
+
+<p align="center">
+  <img src="docs/desktop_workspace.png" alt="Desktop Workspace View" width="700" />
+</p>
+<p align="center">
+  <img src="docs/mobile_workspace.png" alt="Mobile Workspace View" width="320" />
 </p>
 
 ---
