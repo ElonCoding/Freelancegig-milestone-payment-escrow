@@ -14,9 +14,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Rust Toolchain
-        uses: dtolnay/rust-toolchain@1.82.0
+        uses: dtolnay/rust-toolchain@1.85.0
         with:
-          targets: wasm32-unknown-unknown
+          targets: wasm32v1-none
           components: clippy
 
       - name: Cache Cargo Dependencies
@@ -33,7 +33,7 @@ jobs:
       - name: Cargo Check
         run: |
           cd contract
-          cargo check --target wasm32-unknown-unknown
+          cargo check --target wasm32v1-none
 
       - name: Cargo Test
         run: |
