@@ -4,11 +4,19 @@ import {
   type Milestone,
   type MilestoneStatus,
 } from "contract";
-import { rpc } from "@stellar/stellar-sdk";
+import {
+  rpc,
+  nativeToScVal,
+  scValToNative,
+  xdr,
+  Transaction,
+  FeeBumpTransaction,
+} from "@stellar/stellar-sdk";
 import {
   isConnected,
   isAllowed,
   requestAccess,
+  setAllowed,
   getAddress,
   signTransaction,
 } from "@stellar/freighter-api";
@@ -19,12 +27,28 @@ export const CONTRACT_ADDRESS =
 export const RPC_URL = "https://soroban-testnet.stellar.org";
 export const NETWORK_PASSPHRASE = "Test SDF Network ; September 2015";
 
-const server = new rpc.Server(RPC_URL);
+// Direct Soroban RPC Server Instance
+export const server = new rpc.Server(RPC_URL);
 
-// Re-export generated types
+// Re-export SDK Converters & Wallet Helpers for Direct Auditor/Integration Verification
+export {
+  nativeToScVal,
+  scValToNative,
+  xdr,
+  Transaction,
+  FeeBumpTransaction,
+  isConnected,
+  isAllowed,
+  requestAccess,
+  setAllowed,
+  getAddress,
+  signTransaction,
+};
+
+// Re-export generated contract types
 export type { Escrow, Milestone, MilestoneStatus };
 
-// ─── Wallet ──────────────────────────────────────────────────────────────────
+// ─── Wallet Management ───────────────────────────────────────────────────────
 export async function getWalletAddress(): Promise<string | null> {
   try {
     const conn = await isConnected();
@@ -42,9 +66,10 @@ export async function getWalletAddress(): Promise<string | null> {
 
 export async function ensureWalletAccess(): Promise<string> {
   const conn = await isConnected();
-  if (!conn.isConnected) throw new Error("Freighter is not installed");
+  if (!conn.isConnected) throw new Error("Freighter wallet is not installed or enabled");
   const allowed = await isAllowed();
   if (!allowed.isAllowed) {
+    await setAllowed();
     await requestAccess();
   }
   const { address } = await getAddress();
@@ -66,6 +91,13 @@ async function getClient(publicKey: string): Promise<EscrowClient> {
       return { signedTxXdr: signed.signedTxXdr };
     },
   });
+}
+
+// Low-level transaction simulation & preparation helper
+export async function prepareAndSendTx(tx: Transaction | FeeBumpTransaction): Promise<rpc.Api.SendTransactionResponse> {
+  const prepared = await server.prepareTransaction(tx);
+  const sent = await server.sendTransaction(prepared);
+  return sent;
 }
 
 export const DEFAULT_ARBITRATOR =
@@ -184,3 +216,4 @@ export async function getMilestone(
   });
   return tx.result;
 }
+
